@@ -3,13 +3,13 @@
 import StatsCard from "@/components/StatsCard";
 import RecentAnnouncementsPanel, {
   Announcement,
-} from "@/components/RecentAnnouncementsPanel";
+} from "@/components/employee/RecentAnnouncementsPanel";
 import EmployeeMyPayslipPanel, {
   Payslip,
-} from "@/components/EmployeeMyPayslipPanel";
+} from "@/components/employee/EmployeeMyPayslipPanel";
 import EmployeeRecentReportTable, {
   Report,
-} from "@/components/EmployeeRecentReportTable";
+} from "@/components/employee/EmployeeRecentReportTable";
 import { CheckCheck, Clock3, WalletCards } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import api from "@/services/axios";
