@@ -1,7 +1,7 @@
 import { ArrowDownRight, ArrowUpRight, LucideIcon } from "lucide-react";
 
 type StatsCardProps = {
-  value?: string;
+  value?: string | number;
   title: string;
   description?: string;
   Icon: LucideIcon;
@@ -30,7 +30,7 @@ export default function StatsCard({
   return (
     <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-[0_10px_30px_rgba(23,33,38,0.06)] border border-[rgba(23,33,38,0.08)] flex items-start justify-between gap-3 sm:gap-4 w-full transition-all duration-200 hover:shadow-[0_12px_28px_rgba(23,33,38,0.1)]">
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] sm:text-xs tracking-[0.12em] text-secondary">
+        <p className="text-[10px] sm:text-xs tracking-[0.12em] font-semibold text-secondary">
           {title}
         </p>
         <h3 className="text-base my-1 wrap-break-word text-primary">{value}</h3>

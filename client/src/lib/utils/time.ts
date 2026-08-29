@@ -19,3 +19,52 @@ export const formatRelativeTime = (value: string | Date) => {
   if (diffMonths < 12) return `${diffMonths}mo ago`;
   return `${diffYears}y ago`;
 };
+
+export const formatDate = (date: Date): string => {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+export const formatForInput = (date: Date | string | null) => {
+  if (!date) return "";
+  if (date instanceof Date) return date.toISOString().slice(0, 10);
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime())
+    ? ""
+    : parsed.toISOString().slice(0, 10);
+};
+
+/**
+ * Parse a value coming from a `type="date"` input into a `Date` object.
+ * Accepts `YYYY-MM-DD` strings, full date strings, or `Date` instances.
+ * Returns `null` for empty/invalid values.
+ */
+export const parseDateInput = (value: string | Date | null | undefined): Date | null => {
+  if (value == null || value === "") return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+
+  if (typeof value === "string") {
+    const m = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+      const year = Number(m[1]);
+      const month = Number(m[2]) - 1;
+      const day = Number(m[3]);
+      const d = new Date(year, month, day);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  return null;
+};
+
+
