@@ -1,6 +1,7 @@
 "use client";
 
 import useAuth from "@/features/auth/hooks/useAuth";
+import Loader from "@/components/ui/Loader";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 import { toast } from "sonner";
@@ -22,7 +23,7 @@ export default function AdminAuthWrapper({
     }
   }, [isAuthReady, router, user]);
 
-  if (!isAuthReady || isAuthLoading) return <div>Loading...</div>;
+  if (!isAuthReady || isAuthLoading) return <Loader />;
   if (!user || user.role !== "admin") return null;
 
   return children;
