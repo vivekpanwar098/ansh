@@ -10,19 +10,19 @@ export default function AdminAuthWrapper({
 }: {
   children: ReactNode;
 }) {
-  const { user, isAuthLoading } = useAuth();
+  const { user, isAuthLoading, isAuthReady } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthLoading) return;
+    if (!isAuthReady) return;
 
     if (!user || user.role !== "admin") {
       router.replace("/login");
       toast.error("Please login as admin");
     }
-  }, [isAuthLoading, router, user]);
+  }, [isAuthReady, router, user]);
 
-  if (isAuthLoading) return <div>Loading...</div>;
+  if (!isAuthReady || isAuthLoading) return <div>Loading...</div>;
   if (!user || user.role !== "admin") return null;
 
   return children;

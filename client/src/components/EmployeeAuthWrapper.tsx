@@ -10,19 +10,19 @@ export default function EmployeeAuthWrapper({
 }: {
   children: ReactNode;
 }) {
-  const { user, isAuthLoading } = useAuth();
+  const { user, isAuthLoading, isAuthReady } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthLoading) return;
+    if (!isAuthReady) return;
 
     if (!user || user.role !== "employee") {
       router.replace("/login");
       toast.error("Please login as employee");
     }
-  }, [isAuthLoading, router, user]);
+  }, [isAuthReady, router, user]);
 
-  if (isAuthLoading) return <div>Loading...</div>;
+  if (!isAuthReady || isAuthLoading) return <div>Loading...</div>;
   if (!user || user.role !== "employee") return null;
 
   return children;
