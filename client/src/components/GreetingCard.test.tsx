@@ -27,9 +27,12 @@ describe("GreetingCard", () => {
       <AuthContext.Provider
         value={{
           user,
-          login: vi.fn(),
-          logout: vi.fn(),
+          login: async () => {},
+          logout: async () => {},
           isAuthLoading: false,
+          isAuthReady: true,
+          updateAvatar: async () => {},
+          updateProfile: async () => {},
         }}
       >
         <GreetingCard />
