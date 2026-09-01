@@ -2,6 +2,7 @@
 
 import { User } from "@/lib/types/user";
 import api from "@/services/axios";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -12,8 +13,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   isAuthLoading: boolean;
   isAuthReady: boolean;
-  updateAvatar: (data: FormData) => Promise<void>;
-  updateProfile: (data: { name?: string; phone?: string }) => Promise<void>;
+  toggleCheckIn: () => Promise<void>;
 };
 
 const DefaultAuthContextValue: AuthContextType = {
@@ -22,8 +22,7 @@ const DefaultAuthContextValue: AuthContextType = {
   logout: async () => {},
   isAuthLoading: false,
   isAuthReady: false,
-  updateAvatar: async () => {},
-  updateProfile: async () => {},
+  toggleCheckIn: async () => {},
 };
 export const AuthContext = createContext<AuthContextType>(
   DefaultAuthContextValue,
@@ -46,6 +45,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         role: res.data.data.role,
         email: res.data.data.email,
         employeeId: res.data.data.employeeId,
+        isCheckedIn: res.data.data.todayAttendance.status === "checked-in",
       };
       setUser(newUser);
     } catch {
@@ -58,43 +58,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Run once on mount to determine whether the user session exists.
-    getProfile();
-  }, []);
-
-  const updateProfile = async (userData: { name?: string; phone?: string }) => {
-    try {
-      const res = await api.patch("/profile", userData);
-      const newUser: User = {
-        id: res.data.data.id,
-        name: res.data.data.name,
-        profileImage: res.data.data.avatarUrl,
-        role: res.data.data.role,
-        email: res.data.data.email,
-        employeeId: res.data.data.employeeId,
-      };
-      setUser(newUser);
-      toast.success("Profile updated successfully");
-    } catch {
-      toast.error("Failed to update profile");
+    if (!user) {
+      getProfile();
     }
-  };
-
-  const updateAvatar = async (data: FormData) => {
-    try {
-      const res = await api.patch("/profile/avatar", data, {
-        headers: {
-          "Content-Type": "multipart/formdata",
-        },
-      });
-      setUser((prev) => ({
-        ...(prev as User),
-        profileImage: res.data.data.avatarUrl,
-      }));
-      toast.success("Profile image updated successfully");
-    } catch {
-      toast.error("Failed to update avatar");
-    }
-  };
+  }, [user]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -103,7 +70,16 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
-      setUser(res.data.user);
+      const newUser: User = {
+        id: res.data.user.id,
+        name: res.data.user.name,
+        profileImage: res.data.user.avatarUrl,
+        role: res.data.user.role,
+        email: res.data.user.email,
+        employeeId: res.data.user.employeeId,
+        isCheckedIn: res.data.user.todayAttendance.status === "checked-in",
+      };
+      setUser(newUser);
       if (res.data.user?.role === "employee")
         router.push("/employee/dashboard");
       if (res.data.user?.role === "admin") router.push("/admin/dashboard");
@@ -126,6 +102,29 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const toggleCheckIn = async () => {
+    if (
+      !confirm(
+        "You can check-in once in a day. Once checked-out you can't check-in again. Click OK to continue!",
+      )
+    )
+      return;
+    try {
+      if (user?.isCheckedIn) {
+        await api.post("/employee/me/attendance", { status: "present" });
+        setUser((prev) => ({ ...(prev as User), isCheckedIn: false }));
+        toast.success("You have checked-in successfully");
+      } else {
+        await api.post("/employee/me/attendance", { status: "present" });
+        setUser((prev) => ({ ...(prev as User), isCheckedIn: true }));
+        toast.success("You have checked-out successfully");
+      }
+      window.location.reload();
+    } catch (err) {
+      if (err instanceof AxiosError) toast.error(err.response?.data.message);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -134,8 +133,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         isAuthLoading,
         isAuthReady,
-        updateProfile,
-        updateAvatar,
+        toggleCheckIn,
       }}
     >
       {children}

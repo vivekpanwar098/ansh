@@ -5,18 +5,11 @@ import EmployeeAuthWrapper from "@/components/EmployeeAuthWrapper";
 import Sidebar from "@/features/sidebar/components/Sidebar";
 import Header from "@/features/header/components/Header";
 import type { SidebarItemData } from "@/features/sidebar/components/SidebarItem";
-import {
-  LayoutDashboard,
-  CalendarCheck,
-  Users,
-  Wallet,
-  Settings,
-} from "lucide-react";
+import { LayoutDashboard, CalendarCheck, Wallet, Settings } from "lucide-react";
 
 const navItems: SidebarItemData[] = [
   { label: "Dashboard", Icon: LayoutDashboard, url: "/employee/dashboard" },
   { label: "Attendance", Icon: CalendarCheck, url: "/employee/attendance" },
-  { label: "Leaves", Icon: Users, url: "/employee/leaves" },
   { label: "Payroll", Icon: Wallet, url: "/employee/payroll" },
   { label: "Settings", Icon: Settings, url: "/employee/settings" },
 ];

@@ -8,16 +8,18 @@ import Link from "next/link";
 import NotificationPanel from "@/components/NotificationPanel";
 import api from "@/services/axios";
 import { toast } from "sonner";
+import CheckInOutButton from "@/components/employee/CheckInOutButton";
 
 type HeaderProps = {
   openSidebar: () => void;
 };
 
 export default function Header({ openSidebar }: HeaderProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, toggleCheckIn } = useAuth();
   const [open, setOpen] = useState(false);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [isUpdatingCheckInStatus, setIsUpdatingCheckInStatus] = useState(false);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -65,10 +67,24 @@ export default function Header({ openSidebar }: HeaderProps) {
         </button>
 
         <div className="flex gap-6">
+          {user && user.role === "employee" && (
+            <CheckInOutButton
+              isCheckedIn={user.isCheckedIn}
+              isLoading={isUpdatingCheckInStatus}
+              handleToggle={async () => {
+                setIsUpdatingCheckInStatus(true);
+                try {
+                  await toggleCheckIn();
+                } finally {
+                  setIsUpdatingCheckInStatus(false);
+                }
+              }}
+            ></CheckInOutButton>
+          )}
           {/* Add Employee button  */}
           {user && user.role === "admin" && (
             <Link
-              href="/admin/employees/new"
+              href="/admin/employees"
               className="p-2 bg-theme/80 hover:bg-theme flex gap-2 text-gray-100 hover:text-white rounded-lg text-sm items-center transition duration-400"
             >
               <PlusIcon className="h-4 w-4 shrink-0" /> Add Employee
@@ -137,13 +153,14 @@ export default function Header({ openSidebar }: HeaderProps) {
                 className="absolute top-full right-0 mt-2 w-44 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
               >
                 <div className="py-1">
-                  <button
+                  <Link
+                    href="/employee/profile"
                     onClick={() => setOpen(false)}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     role="menuitem"
                   >
                     <User className="h-4 w-4" /> Profile
-                  </button>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 flex items-center gap-2"

@@ -46,9 +46,12 @@ export const formatForInput = (date: Date | string | null) => {
  * Accepts `YYYY-MM-DD` strings, full date strings, or `Date` instances.
  * Returns `null` for empty/invalid values.
  */
-export const parseDateInput = (value: string | Date | null | undefined): Date | null => {
+export const parseDateInput = (
+  value: string | Date | null | undefined,
+): Date | null => {
   if (value == null || value === "") return null;
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (value instanceof Date)
+    return Number.isNaN(value.getTime()) ? null : value;
 
   if (typeof value === "string") {
     const m = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -67,4 +70,33 @@ export const parseDateInput = (value: string | Date | null | undefined): Date | 
   return null;
 };
 
+export const getTimeFromDate = (
+  value: Date | string | number | null | undefined,
+): string => {
+  if (value == null) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
 
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  const mins = minutes.toString().padStart(2, "0");
+  return `${hours}:${mins} ${ampm}`;
+};
+
+export const getFullDateWithDay = (
+  value: Date | string | number | null | undefined,
+): string => {
+  if (value == null) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+};
