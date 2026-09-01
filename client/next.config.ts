@@ -5,15 +5,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname, ".."),
   },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com", // Match specific domain
-        pathname: "/**", // Match all paths
-      },
-    ],
-  },
+
+   images: {
+    qualities: [70, 75], // 🔧 FIX: quality=70 ko explicitly allow list me add kiya
+  }
+  
 };
 
 export default nextConfig;

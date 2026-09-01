@@ -31,6 +31,8 @@ const navItems: SidebarItemData[] = [
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+
+
   return (
     <AdminAuthWrapper>
       <div className="min-h-screen bg-primary-bg text-primary">

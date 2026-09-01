@@ -5,5 +5,4 @@ export interface User {
   email: string;
   employeeId?: string;
   profileImage?: string;
-  isCheckedIn: boolean;
 }

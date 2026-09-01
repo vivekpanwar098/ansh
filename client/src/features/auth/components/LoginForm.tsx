@@ -1,18 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-type Role = "admin" | "employee";
-
-interface LoginResponse {
-  message?: string;
-  token?: string;
-  user?: {
-    email: string;
-    role: Role;
-  };
-}
+import { useState, useCallback } from "react";
+import useAuth from "../hooks/useAuth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("admin@gmail.com");
@@ -20,63 +9,27 @@ export default function LoginForm() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+  const { login } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+ 
+  const handleLogin = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
+      setLoading(true);
 
-    try {
-      const res = await fetch(
-        "https://crm-portal-be-zo92.onrender.com/api/auth/signin",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      const data: LoginResponse = await res.json();
-
-      if (res.ok) {
-        const role = data.user?.role;
-
-        if (!role) {
-          setError("Login succeeded but no role was returned. Contact admin.");
-          return;
-        }
-
-        // Persist for client-side route guarding / API calls.
-        // NOTE: for real authorization, the backend must verify the role
-        // on every protected request — this only drives the redirect UX.
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
-        localStorage.setItem("role", role);
-
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (role === "employee") {
-          router.push("/employee/dashboard");
-        } else {
-          setError(`Unrecognized role "${role}". Contact admin.`);
-        }
-      } else {
-        setError(data.message || "Login failed. Please check your credentials.");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      login(email, password)
+        .then(() => setLoading(false))
+        .catch(() => {
+          setLoading(false);
+          setError("Something went wrong. Please try again.");
+        });
+    },
+    [email, password, login]
+  );
 
   return (
-    <form onSubmit={handleLogin} className="w-full max-w-[420px]">
+    <form onSubmit={handleLogin} className="w-full max-w-105">
       {error && (
         <div className="mb-4 rounded-[10px] bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
