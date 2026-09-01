@@ -5,11 +5,18 @@ import EmployeeAuthWrapper from "@/components/EmployeeAuthWrapper";
 import Sidebar from "@/features/sidebar/components/Sidebar";
 import Header from "@/features/header/components/Header";
 import type { SidebarItemData } from "@/features/sidebar/components/SidebarItem";
-import { LayoutDashboard, CalendarCheck, Wallet, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  Users,
+  Wallet,
+  Settings,
+} from "lucide-react";
 
 const navItems: SidebarItemData[] = [
   { label: "Dashboard", Icon: LayoutDashboard, url: "/employee/dashboard" },
   { label: "Attendance", Icon: CalendarCheck, url: "/employee/attendance" },
+  { label: "Leaves", Icon: Users, url: "/employee/leaves" },
   { label: "Payroll", Icon: Wallet, url: "/employee/payroll" },
   { label: "Settings", Icon: Settings, url: "/employee/settings" },
 ];
@@ -28,7 +35,7 @@ export default function EmployeeLayout({ children }: { children: ReactNode }) {
 
         <div className="flex min-h-screen flex-col lg:pl-64 xl:pl-70">
           <Header openSidebar={() => setSidebarOpen(true)} />
-          <main className="flex-1 p-4">{children}</main>
+          <main className="flex-1 p-4 sm:p-6">{children}</main>
         </div>
       </div>
     </EmployeeAuthWrapper>

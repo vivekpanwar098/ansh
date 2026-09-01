@@ -6,14 +6,14 @@ import { X } from "lucide-react";
 
 type ModalProps = {
   open: boolean;
-  onClose?: () => void;
+  onClose: () => void;
   title: string;
   children: ReactNode;
 };
 
 export default function Modal({ open, onClose, title, children }: ModalProps) {
   useEffect(() => {
-    if (!open || !onClose) return;
+    if (!open) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -30,7 +30,7 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
       <div
         data-testid="modal-backdrop"
         aria-hidden="true"
-        onClick={() => onClose?.()}
+        onClick={onClose}
         className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
       />
       <div
@@ -42,9 +42,9 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-sans text-lg font-bold text-primary">{title}</h2>
           <button
-            onClick={() => onClose?.()}
+            onClick={onClose}
             aria-label="Close modal"
-            className="cursor-pointer text-secondary transition-colors hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer text-secondary transition-colors hover:text-primary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -52,6 +52,6 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
         {children}
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }

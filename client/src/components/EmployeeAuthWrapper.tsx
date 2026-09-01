@@ -1,7 +1,6 @@
 "use client";
 
 import useAuth from "@/features/auth/hooks/useAuth";
-import Loader from "@/components/ui/Loader";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 import { toast } from "sonner";
@@ -11,19 +10,19 @@ export default function EmployeeAuthWrapper({
 }: {
   children: ReactNode;
 }) {
-  const { user, isAuthLoading, isAuthReady } = useAuth();
+  const { user, isAuthLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthReady) return;
+    if (isAuthLoading) return;
 
     if (!user || user.role !== "employee") {
       router.replace("/login");
       toast.error("Please login as employee");
     }
-  }, [isAuthReady, router, user]);
+  }, [isAuthLoading, router, user]);
 
-  if (!isAuthReady || isAuthLoading) return <Loader />;
+  if (isAuthLoading) return <div>Loading...</div>;
   if (!user || user.role !== "employee") return null;
 
   return children;

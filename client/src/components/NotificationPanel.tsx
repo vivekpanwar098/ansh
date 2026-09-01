@@ -5,7 +5,7 @@ import api from "@/services/axios";
 import { toast } from "sonner";
 import { formatRelativeTime } from "@/lib/utils/time";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 type NotificationPanelProps = {
   closeNotificationPanel: () => void;
